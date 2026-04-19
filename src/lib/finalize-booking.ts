@@ -47,7 +47,6 @@ export async function finalizeBooking(params: {
 
   const appointment: Appointment = {
     id: `a_${randomUUID()}`,
-    tenantId: pending.tenantId,
     clientId: pending.clientId,
     clientEmail: pending.clientEmail,
     providerId: pending.providerId,
@@ -74,7 +73,6 @@ export async function finalizeBooking(params: {
   );
 
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: appointment.clientId,
     actorRole: "client",
     action: "appointment.booked",
@@ -98,14 +96,12 @@ export async function finalizeBooking(params: {
   });
   await Promise.all([
     sendEmail({
-      tenantId: appointment.tenantId,
       kind: "appointment-booked",
       to: appointment.clientEmail,
       subject: `Your session with ${appointment.providerName} is booked`,
       body: `Your ${appointment.format} session with ${appointment.providerName} is scheduled for ${when}. Payment of $${(pending.amountCents / 100).toFixed(2)} was charged. You can join from your dashboard.`,
     }),
     sendEmail({
-      tenantId: appointment.tenantId,
       kind: "appointment-booked",
       to: appointment.providerEmail,
       subject: `New appointment: ${when}`,

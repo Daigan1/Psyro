@@ -74,7 +74,6 @@ export async function POST(
     status: reason === "completed" ? "completed" : "tech-failure",
   });
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: body.role === "client" ? appointment.clientId : appointment.providerId,
     actorRole: body.role,
     action: "session.ended",
@@ -94,7 +93,6 @@ export async function POST(
       const result = await transcribeSession(appointment);
       await createArtifact({
         appointmentId: appointment.id,
-        tenantId: appointment.tenantId,
         providerId: appointment.providerId,
         clientId: appointment.clientId,
         transcriptRaw: result.text,

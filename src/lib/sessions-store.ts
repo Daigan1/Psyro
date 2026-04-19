@@ -16,13 +16,11 @@ export async function getSession(
 
 export async function ensureSession(
   appointmentId: string,
-  tenantId: string,
 ): Promise<SessionState> {
   const existing = await ddbGetSession(appointmentId);
   if (existing) return existing;
   const fresh: SessionState = {
     appointmentId,
-    tenantId,
     consent: { client: null, provider: null },
     refused: null,
     meetingId: null,

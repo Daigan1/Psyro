@@ -71,7 +71,6 @@ export async function POST(request: Request) {
   const tail = approved.slice(1);
 
   recordAudit({
-    tenantId: recent[0].tenantId,
     actorId: payload.sub,
     actorRole: "client",
     action: "qa.asked",

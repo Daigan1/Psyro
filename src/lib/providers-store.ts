@@ -8,11 +8,9 @@ import {
   ddbGetUser,
   ddbGetUserByEmail,
   ddbListAllProviders,
-  ddbListProvidersForTenant,
   ddbPutUser,
   ddbUpdateProviderProfile,
 } from "./aws/dynamodb";
-import { DEMO_TENANT_ID } from "./tenant-store";
 import type {
   ProviderUserRecord,
   Therapist,
@@ -38,13 +36,6 @@ function toTherapist(rec: ProviderUserRecord): Therapist {
 
 export async function listProviders(): Promise<Therapist[]> {
   const recs = await ddbListAllProviders();
-  return recs.map(toTherapist);
-}
-
-export async function listProvidersForTenant(
-  tenantId: string,
-): Promise<Therapist[]> {
-  const recs = await ddbListProvidersForTenant(tenantId);
   return recs.map(toTherapist);
 }
 
@@ -107,7 +98,6 @@ export async function createSelfSignupProvider(
   const id = `t_${short}`;
   const provider: Therapist = {
     id,
-    tenantId: DEMO_TENANT_ID,
     email: normalized,
     status: "active",
     name: normalized.split("@")[0],

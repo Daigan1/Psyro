@@ -47,7 +47,6 @@ export async function POST(
     );
   }
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: providerId,
     actorRole: "provider",
     action: status === "approved" ? "artifact.approved" : "artifact.rejected",
@@ -58,7 +57,6 @@ export async function POST(
 
   if (status === "approved") {
     await sendEmail({
-      tenantId: appointment.tenantId,
       kind: "session-summary-approved",
       to: appointment.clientEmail,
       subject: `Your session summary with ${appointment.providerName} is ready`,

@@ -51,7 +51,6 @@ export async function POST(
 
   await putAppointment({ ...appointment, status });
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: user.sub,
     actorRole: user.role,
     action: "appointment.cancelled",
@@ -64,7 +63,6 @@ export async function POST(
   const counterpartEmail =
     cancelledBy === "client" ? appointment.providerEmail : appointment.clientEmail;
   await sendEmail({
-    tenantId: appointment.tenantId,
     kind: "appointment-cancelled",
     to: counterpartEmail,
     subject: `Session ${status === "late-cancel" ? "cancelled (late notice)" : "cancelled"}`,

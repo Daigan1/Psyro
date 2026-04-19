@@ -13,7 +13,7 @@
 import { NextResponse } from "next/server";
 import { listAppointmentsForClient } from "@/lib/appointments-store";
 import { getArtifact } from "@/lib/session-artifacts-store";
-import { listResourcesForTenant } from "@/lib/resources-store";
+import { listResourcesForProvider } from "@/lib/resources-store";
 import { retrieveGrounding } from "@/lib/qa-retrieval";
 import { recordAudit } from "@/lib/audit-log";
 import { tokenFromRequest, verifyConversationToken } from "@/lib/eleven-token";
@@ -99,14 +99,10 @@ export async function POST(request: Request) {
     });
   }
 
-  // Pull provider resources once. We already have one provider per
-  // tenant in this app's model, so we can reuse the same set across all
-  // sessions.
-  const tenantId = recent[0].tenantId;
-  const allResources = await listResourcesForTenant(tenantId);
+  // Pull provider resources once — reused across all sessions below.
   const myProviderId = recent[0].providerId;
-  const resources: TherapistResource[] = allResources.filter(
-    (r) => r.providerId === myProviderId,
+  const resources: TherapistResource[] = await listResourcesForProvider(
+    myProviderId,
   );
 
   // Score per session, then merge.
@@ -208,7 +204,6 @@ export async function POST(request: Request) {
   }));
 
   recordAudit({
-    tenantId,
     actorId: payload.sub,
     actorRole: "client",
     action: "qa.asked",

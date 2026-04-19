@@ -1,6 +1,6 @@
 // Server-only: never import from a "use client" module.
 // Scaffold retrieval: keyword-overlap scoring across approved transcript +
-// approved summary + tenant resources. Returns top-K grounded candidates.
+// approved summary + provider resources. Returns top-K grounded candidates.
 // Real impl uses Bedrock/Titan embeddings + OpenSearch k-NN.
 
 import { chunkText } from "./resource-ingestion";

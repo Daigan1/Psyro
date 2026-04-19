@@ -51,7 +51,6 @@ export async function POST(request: Request) {
   const id = `res_${randomUUID()}`;
   const base: Omit<TherapistResource, "extractedText" | "chunks" | "status" | "failureReason"> = {
     id,
-    tenantId: user.tenantId!,
     providerId: user.providerId!,
     kind: body.kind as ResourceKind,
     title: body.title.trim(),
@@ -101,7 +100,6 @@ export async function POST(request: Request) {
   };
   await putResource(resource);
   recordAudit({
-    tenantId: user.tenantId ?? null,
     actorId: user.providerId ?? null,
     actorRole: "provider",
     action: "resource.created",

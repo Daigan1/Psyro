@@ -37,7 +37,6 @@ export async function PATCH(
   try {
     const artifact = await updateTranscriptEdit(id, body.transcript);
     recordAudit({
-      tenantId: appointment.tenantId,
       actorId: providerId,
       actorRole: "provider",
       action: "artifact.transcript-edited",

@@ -5,7 +5,6 @@ import {
   ddbDeleteResource,
   ddbGetResource,
   ddbListResourcesForProvider,
-  ddbListResourcesForTenant,
   ddbPutResource,
 } from "./aws/dynamodb";
 import type { TherapistResource } from "./types";
@@ -33,10 +32,4 @@ export async function listResourcesForProvider(
   providerId: string,
 ): Promise<TherapistResource[]> {
   return ddbListResourcesForProvider(providerId);
-}
-
-export async function listResourcesForTenant(
-  tenantId: string,
-): Promise<TherapistResource[]> {
-  return ddbListResourcesForTenant(tenantId);
 }

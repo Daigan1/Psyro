@@ -22,7 +22,6 @@ import type {
   QAInteraction,
   SessionArtifact,
   SessionState,
-  Tenant,
   Therapist,
   TherapistResource,
   UserRecord,
@@ -279,28 +278,12 @@ export async function ddbPutIntakeProgress(
   );
 }
 
-// ---------- Tenants ----------
-
-export async function ddbGetTenant(id: string): Promise<Tenant | null> {
-  const res = await getClient().send(
-    new GetCommand({ TableName: "tinyfish_tenants", Key: { id } }),
-  );
-  return (res.Item as Tenant) ?? null;
-}
-
-export async function ddbPutTenant(t: Tenant): Promise<void> {
-  await getClient().send(
-    new PutCommand({ TableName: "tinyfish_tenants", Item: t }),
-  );
-}
-
 // ---------- Users (clients + providers) ----------
 //
 // Single table: env.ddb.users. Partition key `id`. Role-discriminated via
-// the `role` attribute. Expected GSIs for production:
-//   - email-index: HASH(email)                 — lookup on sign-in
-//   - tenantId-role-index: HASH(tenantId), RANGE(role)   — list providers per tenant
-// Scan fallbacks handle dev/local where GSIs aren't provisioned.
+// the `role` attribute. Expected GSI:
+//   - email-index: HASH(email)  — lookup on sign-in
+// Scan fallback handles dev/local where the GSI isn't provisioned.
 
 export async function ddbGetUser(id: string): Promise<UserRecord | null> {
   const res = await getClient().send(
@@ -372,7 +355,6 @@ export async function ddbTouchSignIn(
   const baseAttrs: Record<string, unknown> = {
     ":email": defaults.email,
     ":role": defaults.role,
-    ":tenantId": defaults.tenantId,
     ":createdAt": defaults.createdAt,
     ":now": now,
   };
@@ -382,7 +364,6 @@ export async function ddbTouchSignIn(
   const sets: string[] = [
     "email = if_not_exists(email, :email)",
     "#role = if_not_exists(#role, :role)",
-    "tenantId = if_not_exists(tenantId, :tenantId)",
     "createdAt = if_not_exists(createdAt, :createdAt)",
     "lastSignInAt = :now",
   ];
@@ -470,33 +451,6 @@ export async function ddbUpdateProviderProfile(
   return res.Attributes as ProviderUserRecord;
 }
 
-export async function ddbListProvidersForTenant(
-  tenantId: string,
-): Promise<ProviderUserRecord[]> {
-  try {
-    const res = await getClient().send(
-      new QueryCommand({
-        TableName: env.ddb.users,
-        IndexName: "tenantId-role-index",
-        KeyConditionExpression: "tenantId = :t AND #role = :r",
-        ExpressionAttributeNames: { "#role": "role" },
-        ExpressionAttributeValues: { ":t": tenantId, ":r": "provider" },
-      }),
-    );
-    return (res.Items as ProviderUserRecord[]) ?? [];
-  } catch {
-    const res = await getClient().send(
-      new ScanCommand({
-        TableName: env.ddb.users,
-        FilterExpression: "tenantId = :t AND #role = :r",
-        ExpressionAttributeNames: { "#role": "role" },
-        ExpressionAttributeValues: { ":t": tenantId, ":r": "provider" },
-      }),
-    );
-    return (res.Items as ProviderUserRecord[]) ?? [];
-  }
-}
-
 export async function ddbListAllProviders(): Promise<ProviderUserRecord[]> {
   const res = await getClient().send(
     new ScanCommand({
@@ -560,30 +514,3 @@ export async function ddbListResourcesForProvider(
   }
 }
 
-export async function ddbListResourcesForTenant(
-  tenantId: string,
-): Promise<TherapistResource[]> {
-  try {
-    const res = await getClient().send(
-      new QueryCommand({
-        TableName: requireTable(env.ddb.resources, "DDB_TABLE_RESOURCES"),
-        IndexName: "tenantId-createdAt-index",
-        KeyConditionExpression: "tenantId = :t",
-        ExpressionAttributeValues: { ":t": tenantId },
-        ScanIndexForward: false,
-      }),
-    );
-    return (res.Items as TherapistResource[]) ?? [];
-  } catch {
-    const res = await getClient().send(
-      new ScanCommand({
-        TableName: requireTable(env.ddb.resources, "DDB_TABLE_RESOURCES"),
-        FilterExpression: "tenantId = :t",
-        ExpressionAttributeValues: { ":t": tenantId },
-      }),
-    );
-    return ((res.Items as TherapistResource[]) ?? []).sort((a, b) =>
-      b.createdAt.localeCompare(a.createdAt),
-    );
-  }
-}

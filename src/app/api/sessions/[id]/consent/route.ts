@@ -46,13 +46,12 @@ export async function POST(
   const authError = await authorize(body.role, appointment);
   if (authError) return authError;
 
-  await ensureSession(appointmentId, appointment.tenantId);
+  await ensureSession(appointmentId);
 
   if (body.action === "refuse") {
     try {
       const session = await recordRefusal(appointmentId, body.role);
       recordAudit({
-        tenantId: appointment.tenantId,
         actorId: body.role === "client" ? appointment.clientId : appointment.providerId,
         actorRole: body.role,
         action: "session.refused",
@@ -79,7 +78,6 @@ export async function POST(
     );
   }
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: body.role === "client" ? appointment.clientId : appointment.providerId,
     actorRole: body.role,
     action: "session.consent",
@@ -112,7 +110,6 @@ export async function POST(
       session = await recordJoin(appointmentId, "client");
       session = await recordJoin(appointmentId, "provider");
       recordAudit({
-        tenantId: appointment.tenantId,
         actorId: null,
         actorRole: "system",
         action: "session.started",

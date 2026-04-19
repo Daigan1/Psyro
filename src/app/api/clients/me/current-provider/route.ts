@@ -40,7 +40,6 @@ export async function POST(request: Request) {
 
   await setClientCurrentProvider(auth.user.clientId, providerId);
   recordAudit({
-    tenantId: auth.user.tenantId ?? null,
     actorId: auth.user.clientId,
     actorRole: "client",
     action: "client.current-provider-changed",

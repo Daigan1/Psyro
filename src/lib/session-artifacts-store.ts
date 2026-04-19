@@ -28,7 +28,6 @@ export async function listArtifactsForProvider(
 
 export async function createArtifact(args: {
   appointmentId: string;
-  tenantId: string;
   providerId: string;
   clientId: string;
   transcriptRaw: string;
@@ -36,7 +35,6 @@ export async function createArtifact(args: {
 }): Promise<SessionArtifact> {
   const artifact: SessionArtifact = {
     appointmentId: args.appointmentId,
-    tenantId: args.tenantId,
     providerId: args.providerId,
     clientId: args.clientId,
     transcriptRaw: args.transcriptRaw,

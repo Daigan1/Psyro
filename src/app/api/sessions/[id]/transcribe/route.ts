@@ -67,14 +67,12 @@ export async function POST(
     }
     const artifact = await createArtifact({
       appointmentId: id,
-      tenantId: appointment.tenantId,
       providerId: appointment.providerId,
       clientId: appointment.clientId,
       transcriptRaw: text,
       transcriptSegments: [], // no timestamps for pasted text
     });
     recordAudit({
-      tenantId: appointment.tenantId,
       actorId: providerId,
       actorRole: "provider",
       action: "artifact.summary-generated",
@@ -105,14 +103,12 @@ export async function POST(
       const result = await transcribeAudioBlob(file);
       const artifact = await createArtifact({
         appointmentId: id,
-        tenantId: appointment.tenantId,
         providerId: appointment.providerId,
         clientId: appointment.clientId,
         transcriptRaw: result.text,
         transcriptSegments: result.segments,
       });
       recordAudit({
-        tenantId: appointment.tenantId,
         actorId: providerId,
         actorRole: "provider",
         action: "artifact.summary-generated",
@@ -142,7 +138,6 @@ export async function POST(
     const result = await transcribeSession(appointment);
     const artifact = await createArtifact({
       appointmentId: id,
-      tenantId: appointment.tenantId,
       providerId: appointment.providerId,
       clientId: appointment.clientId,
       transcriptRaw: result.text,
@@ -154,7 +149,6 @@ export async function POST(
       // session row may not exist yet (older flows). Non-fatal.
     }
     recordAudit({
-      tenantId: appointment.tenantId,
       actorId: providerId,
       actorRole: "provider",
       action: "artifact.summary-generated",

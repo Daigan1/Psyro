@@ -16,7 +16,6 @@ export type NotificationChannel = "email";
 
 export type NotificationRecord = {
   id: string;
-  tenantId: string | null;
   kind: NotificationKind;
   channel: NotificationChannel;
   to: string;
@@ -36,13 +35,11 @@ if (!g.__tinyfishNotifications) {
 }
 const log: NotificationRecord[] = g.__tinyfishNotifications;
 
-export function listNotifications(tenantId?: string | null): NotificationRecord[] {
-  const all = log.slice().reverse();
-  return tenantId ? all.filter((n) => n.tenantId === tenantId) : all;
+export function listNotifications(): NotificationRecord[] {
+  return log.slice().reverse();
 }
 
 export async function sendEmail(input: {
-  tenantId: string | null;
   kind: NotificationKind;
   to: string;
   subject: string;
@@ -54,7 +51,6 @@ export async function sendEmail(input: {
     input.subject,
     input.body,
     input.kind,
-    input.tenantId,
     async () => {
       if (env.ses.from) {
         const { sendSesEmail } = await import("./aws/ses");
@@ -88,12 +84,10 @@ async function record(
   subject: string | null,
   body: string,
   kind: NotificationKind,
-  tenantId: string | null,
   deliver: () => Promise<void>,
 ): Promise<NotificationRecord> {
   const entry: NotificationRecord = {
     id: `ntf_${randomUUID()}`,
-    tenantId,
     kind,
     channel,
     to,

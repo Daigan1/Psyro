@@ -84,7 +84,6 @@ export async function POST(request: Request) {
   const pendingId = `pb_${randomUUID()}`;
   await putPendingBooking({
     id: pendingId,
-    tenantId: therapist.tenantId,
     providerId: therapist.id,
     providerName: therapist.name,
     providerEmail: `${therapist.id}@demo.local`,

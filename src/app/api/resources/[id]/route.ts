@@ -20,7 +20,6 @@ export async function DELETE(
   }
   await removeResource(id);
   recordAudit({
-    tenantId: resource.tenantId,
     actorId: auth.user.providerId ?? null,
     actorRole: "provider",
     action: "resource.deleted",

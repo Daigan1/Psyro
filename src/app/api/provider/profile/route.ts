@@ -34,7 +34,6 @@ export async function PATCH(request: Request) {
   try {
     const provider = await updateProviderProfile(auth.user.providerId!, body);
     recordAudit({
-      tenantId: auth.user.tenantId ?? null,
       actorId: auth.user.providerId ?? null,
       actorRole: "provider",
       action: "provider.profile-updated",

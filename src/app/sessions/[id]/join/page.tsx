@@ -34,7 +34,7 @@ export default async function ClientJoinPage({
   }
 
   const [session, progress] = await Promise.all([
-    ensureSession(appointment.id, appointment.tenantId),
+    ensureSession(appointment.id),
     getIntakeProgress(user.clientId!),
   ]);
   const displayName =

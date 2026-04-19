@@ -4,7 +4,7 @@ import type { QACitation, QAInteraction } from "@/lib/types";
 import { requireAuthApi } from "@/lib/auth-api";
 import { getAppointment } from "@/lib/appointments-store";
 import { getArtifact } from "@/lib/session-artifacts-store";
-import { listResourcesForTenant } from "@/lib/resources-store";
+import { listResourcesForProvider } from "@/lib/resources-store";
 import { answerSessionQuestion } from "@/lib/featherless";
 import { listInteractions, recordInteraction } from "@/lib/qa-store";
 import { recordAudit } from "@/lib/audit-log";
@@ -89,10 +89,7 @@ export async function POST(
       "This sounds important and I'm not the right source for it. Please reach out to your therapist directly, or if you're in immediate distress, call or text 988. I can help with questions about what you and your therapist discussed in the approved session summary.";
     citations = [];
   } else {
-    const allResources = await listResourcesForTenant(appointment.tenantId);
-    const resources = allResources.filter(
-      (r) => r.providerId === appointment.providerId,
-    );
+    const resources = await listResourcesForProvider(appointment.providerId);
     try {
       const result = await answerSessionQuestion({
         question,
@@ -170,7 +167,6 @@ export async function POST(
   };
   await recordInteraction(interaction);
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: auth.user.clientId ?? null,
     actorRole: "client",
     action: "qa.asked",

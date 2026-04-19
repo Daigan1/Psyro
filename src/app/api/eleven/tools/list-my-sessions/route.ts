@@ -36,7 +36,6 @@ export async function POST(request: Request) {
 
   if (sessions.length > 0) {
     recordAudit({
-      tenantId: sorted[0].tenantId,
       actorId: payload.sub,
       actorRole: "client",
       action: "qa.asked",

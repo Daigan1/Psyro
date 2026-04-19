@@ -78,7 +78,6 @@ export async function POST(
   };
   await putAppointment(updated);
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: user.sub,
     actorRole: "client",
     action: "appointment.rescheduled",
@@ -93,14 +92,12 @@ export async function POST(
   const when = new Date(updated.startTime).toLocaleString();
   await Promise.all([
     sendEmail({
-      tenantId: appointment.tenantId,
       kind: "appointment-booked",
       to: appointment.clientEmail,
       subject: `Your session with ${appointment.providerName} moved to ${when}`,
       body: `Your session is now scheduled for ${when}.`,
     }),
     sendEmail({
-      tenantId: appointment.tenantId,
       kind: "appointment-booked",
       to: appointment.providerEmail,
       subject: `Session rescheduled to ${when}`,

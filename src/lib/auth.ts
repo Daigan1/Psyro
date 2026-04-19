@@ -32,7 +32,6 @@ export type SessionPayload = {
   // role-specific fields
   clientId?: string;
   providerId?: string;
-  tenantId?: string;
   exp: number;
 };
 
@@ -54,7 +53,6 @@ type Challenge = {
   // Resolved identity fields (populated after email verification).
   sub?: string;
   providerId?: string;
-  tenantId?: string;
   clientId?: string;
   // Live-mode handoff state.
   cognitoSession?: string;
@@ -260,12 +258,10 @@ export async function completeChallenge(
     email: challenge.email,
     clientId: challenge.clientId,
     providerId: challenge.providerId,
-    tenantId: challenge.tenantId,
     exp: 0,
   };
   await persistUserOnSignIn(payload);
   recordAudit({
-    tenantId: challenge.tenantId ?? null,
     actorId: challenge.sub ?? null,
     actorRole: challenge.role,
     action: "auth.sign-in",
@@ -286,7 +282,6 @@ async function persistUserOnSignIn(payload: SessionPayload): Promise<void> {
       id: payload.clientId!,
       email: payload.email,
       role: "client",
-      tenantId: payload.tenantId ?? null,
       createdAt: now,
       lastSignInAt: now,
     };
@@ -320,7 +315,7 @@ async function resolveIdentity(
   email: string,
   role: Role,
 ): Promise<
-  Pick<Challenge, "sub" | "clientId" | "providerId" | "tenantId"> | null
+  Pick<Challenge, "sub" | "clientId" | "providerId"> | null
 > {
   if (role === "client") {
     const clientId = `c_${hash12(email)}`;
@@ -333,7 +328,6 @@ async function resolveIdentity(
   return {
     sub: therapist.id,
     providerId: therapist.id,
-    tenantId: therapist.tenantId,
   };
 }
 

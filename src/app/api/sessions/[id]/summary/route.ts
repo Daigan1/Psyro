@@ -42,7 +42,6 @@ export async function POST(
   const draft = await summarizeTranscript(sourceTranscript);
   const updated = await setSummaryDraft(id, draft);
   recordAudit({
-    tenantId: appointment.tenantId,
     actorId: providerId,
     actorRole: "provider",
     action: "artifact.summary-generated",
@@ -83,7 +82,6 @@ export async function PATCH(
   try {
     const artifact = await updateSummaryDraft(id, body.summary);
     recordAudit({
-      tenantId: appointment.tenantId,
       actorId: providerId,
       actorRole: "provider",
       action: "artifact.summary-edited",

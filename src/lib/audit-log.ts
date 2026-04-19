@@ -1,7 +1,6 @@
 // Server-only: never import from a "use client" module.
-// Append-only audit log keyed by tenant. In-memory ring buffer for dev;
-// swap for DynamoDB (immutable writes, stream to S3 for long-term retention)
-// when USE_AWS=true.
+// Append-only audit log. In-memory ring buffer for dev; swap for DynamoDB
+// (immutable writes, stream to S3 for long-term retention) when USE_AWS=true.
 
 import { randomUUID } from "node:crypto";
 
@@ -32,7 +31,6 @@ export type AuditAction =
 
 export type AuditEntry = {
   id: string;
-  tenantId: string | null;
   actorId: string | null;
   actorRole: AuditActorRole;
   action: AuditAction;
@@ -63,7 +61,6 @@ export function recordAudit(input: Omit<AuditEntry, "id" | "at">): AuditEntry {
 }
 
 export function listAudit(opts: {
-  tenantId?: string | null;
   actorId?: string;
   action?: AuditAction;
   limit?: number;
@@ -72,7 +69,6 @@ export function listAudit(opts: {
   const all = log.slice().reverse();
   return all
     .filter((e) =>
-      (opts.tenantId === undefined || e.tenantId === opts.tenantId) &&
       (opts.actorId === undefined || e.actorId === opts.actorId) &&
       (opts.action === undefined || e.action === opts.action),
     )

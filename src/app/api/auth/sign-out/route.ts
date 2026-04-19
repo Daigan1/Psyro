@@ -6,7 +6,6 @@ export async function POST() {
   const user = await getCurrentUser();
   if (user) {
     recordAudit({
-      tenantId: user.tenantId ?? null,
       actorId: user.sub,
       actorRole: user.role,
       action: "auth.sign-out",

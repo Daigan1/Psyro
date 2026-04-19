@@ -11,7 +11,7 @@
 import { NextResponse } from "next/server";
 import { getUser } from "@/lib/users-store";
 import { getProvider } from "@/lib/providers-store";
-import { listResourcesForTenant } from "@/lib/resources-store";
+import { listResourcesForProvider } from "@/lib/resources-store";
 import { recordAudit } from "@/lib/audit-log";
 import { tokenFromRequest, verifyConversationToken } from "@/lib/eleven-token";
 import type { TherapistResource } from "@/lib/types";
@@ -99,9 +99,6 @@ export async function POST(request: Request) {
     });
   }
 
-  // Tenant comes from the PROVIDER, not the client. Clients don't carry
-  // a tenantId in the user record (multi-tenant scoping is provider-side
-  // only) — so we look up the provider to find the right resource scope.
   const provider = await getProvider(providerId);
   if (!provider) {
     console.warn(
@@ -113,11 +110,9 @@ export async function POST(request: Request) {
         "Couldn't find your therapist on file. Try re-selecting them in Settings.",
     });
   }
-  const tenantId = provider.tenantId;
 
-  const all = await listResourcesForTenant(tenantId);
+  const all = await listResourcesForProvider(providerId);
   const myResources = all.filter((r): r is TherapistResource => {
-    if (r.providerId !== providerId) return false;
     if (r.status !== "ingested") return false;
     // Per-client visibility: empty clientIds = visible to everyone the
     // therapist sees; populated array = scoped to listed clientIds.
@@ -126,13 +121,10 @@ export async function POST(request: Request) {
     return true;
   });
   console.log(
-    `[eleven-tool] search_my_resources: tenant=${tenantId} provider=${providerId} tenantTotal=${all.length} visible=${myResources.length}`,
+    `[eleven-tool] search_my_resources: provider=${providerId} total=${all.length} visible=${myResources.length}`,
   );
   if (myResources.length === 0) {
-    // Drill into *why* nothing's visible so the therapist can fix it.
     const rejectionReasons = all.map((r) => {
-      if (r.providerId !== providerId)
-        return `wrong-provider(${r.providerId})`;
       if (r.status !== "ingested") return `status=${r.status}`;
       const scoped = r.clientIds && r.clientIds.length > 0;
       if (scoped && !r.clientIds!.includes(payload.sub))
@@ -189,7 +181,6 @@ export async function POST(request: Request) {
   );
 
   recordAudit({
-    tenantId,
     actorId: payload.sub,
     actorRole: "client",
     action: "qa.asked",

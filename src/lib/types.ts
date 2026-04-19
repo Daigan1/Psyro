@@ -28,7 +28,6 @@ export type ProviderStatus = "active" | "suspended";
 
 export type Therapist = {
   id: string;
-  tenantId: string;
   email: string;
   status: ProviderStatus;
   name: string;
@@ -62,7 +61,6 @@ export type AppointmentStatus =
 
 export type Appointment = {
   id: string;
-  tenantId: string;
   clientId: string;
   clientEmail: string;
   providerId: string;
@@ -79,20 +77,12 @@ export type Appointment = {
   stripePaymentIntentId: string | null;
 };
 
-export type Tenant = {
-  id: string;
-  name: string;
-  createdAt: string;
-};
-
 // UserRecord is the persisted auth+profile record in tinyfish_users,
-// role-discriminated. Partition key: `id`. GSIs: email-index (on `email`),
-// tenantId-index (on `tenantId`, used for listing providers per tenant).
+// role-discriminated. Partition key: `id`. GSI: email-index (on `email`).
 export type ClientUserRecord = {
   id: string;
   email: string;
   role: "client";
-  tenantId: string | null;
   createdAt: string;
   lastSignInAt: string;
   // Last therapist the client booked with (or chose explicitly via Settings).
@@ -130,7 +120,6 @@ export type ResourceChunk = {
 
 export type TherapistResource = {
   id: string;
-  tenantId: string;
   providerId: string;
   kind: ResourceKind;
   title: string;
@@ -193,7 +182,6 @@ export type TranscriptSegment = {
 
 export type SessionArtifact = {
   appointmentId: string;
-  tenantId: string;
   providerId: string;
   clientId: string;
   transcriptRaw: string;
@@ -211,7 +199,6 @@ export type SessionArtifact = {
 
 export type SessionState = {
   appointmentId: string;
-  tenantId: string;
   // Consent from both parties is required before a video meeting is created.
   consent: { client: string | null; provider: string | null };
   // One of the parties refused — blocks meeting creation permanently.
@@ -244,7 +231,6 @@ export type WeeklyAvailability = {
 
 export type PendingBooking = {
   id: string;
-  tenantId: string;
   providerId: string;
   providerName: string;
   providerEmail: string;

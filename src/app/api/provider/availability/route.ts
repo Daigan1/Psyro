@@ -41,7 +41,6 @@ export async function PATCH(request: Request) {
       parsed.value,
     );
     recordAudit({
-      tenantId: auth.user.tenantId ?? null,
       actorId: auth.user.providerId ?? null,
       actorRole: "provider",
       action: "provider.availability-updated",

@@ -23,6 +23,6 @@ export async function GET(
     return NextResponse.json({ error: "Not your appointment" }, { status: 403 });
   }
 
-  const session = await ensureSession(appointmentId, appointment.tenantId);
+  const session = await ensureSession(appointmentId);
   return NextResponse.json({ session });
 }
