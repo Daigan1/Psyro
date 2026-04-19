@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Psyro is the next-generation of mental health treatment.
 
-## Getting Started
 
-First, run the development server:
+# The Problem: Telehealth is fragmented
+- Finding a good patient / provider match is slow, awkward, and often comes down to guesswork
+- Retaining information from sessions for future reference is left entirely to memory and scattered notes
+- Old, difficult, and annoying user experiences not designed for modern times, leaving both clients and providers frustrated
+- Supplemental materials recommended by therapists get lost in email threads and forgotten between sessions
+- Insights from past conversations are trapped in individual calls, with no way to connect themes across a full treatment journey
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Feature Overview:
+- Sign up as either a provider, or a client for mental health treatment
+- Intake form for both parties includes detailed information about needs, preferences, and specialties
+- Automatic matching of client with therapist based on compatibility, using intake responses to surface the strongest-fit providers first
+- Billing system and calendar managed by provider, so scheduling, invoicing, and payments all live in one place
+- Automatic recording of audio from call, including generated summary, transcript, next-steps, and action items, all approved by therapist before being seen by the client
+- Ability to upload third-party, therapist approved resources to supplement and help clients with their issues, with automatic parsing so the content is searchable and referenceable
+- Powerful, voice-powered A.I agent capable of ingesting all past meetings, and supplemental materials, to meaningfully answer client questions between sessions
+- A.I agent trained on specific calls answering local questions from a call, so clients can revisit a single session and dig into exactly what was said
+- Secure, federated login and account management so clients and providers can trust their data is handled properly
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Market + Oppertunity: 
+- Telehealth is a massive market which is dominated by a few players with mixed reviews, and problems mentioned previously making them fragmented.
+- Serviceable Addressable Market is in the *billions* and waiting to be tapped into.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+# Tracks / Sponsors:
+- TinyFish: retrieve and parse supplemental materials recommended by therapists, turning outside articles and resources into structured content the A.I agent can actually reason over
+- ElevenLabs: speech-to-text, text-to-speech, tool-calling, and natural conversational agents allowing clients to remember the important details from many sessions, and gain deeper insights through real back-and-forth voice conversation
+- Stripe: performant payment platform allowing users to pay for private therapy sessions from providers, with provider-managed billing that handles recurring appointments and one-off charges
+- Featherless: Models help to answer localized questions about specific sessions, and give clients the best-fit providers based on their specific needs, powering both the matching engine and the per-session Q&A
+- AWS: The cloud solution powering the future. Federated logins, email / sms services, and dynamodb for quick access support the platform, keeping auth, notifications, and session data fast and reliable
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Run Project
+- Fill in .env.example with API Keys / Service Names (AWS)
+- Run with `npm run dev`
+- Build for production with `npm run build`
